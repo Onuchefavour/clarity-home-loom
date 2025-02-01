@@ -13,3 +13,19 @@ A decentralized home organization platform that helps users manage their living 
 - Tip system for rewarding helpful organization advice
 - Progress tracking for decluttering goals
 - Token rewards for achieving milestones
+
+## Reward System
+
+HomeLoom features a built-in reward system using the HLM token:
+
+- Earn 100 HLM tokens for completing space organization milestones (100% progress)
+- Receive 10 HLM tokens when your organization tips get liked
+- Use tokens for platform governance and premium features
+- Milestone rewards can only be claimed once per space
+
+## Getting Started
+
+1. Create a new space with organization goals
+2. Share and receive organization tips
+3. Track your progress and earn rewards
+4. Claim HLM tokens for completed milestones
