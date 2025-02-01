@@ -34,7 +34,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "Can add and like tips",
+  name: "Can add and like tips with rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     const deployer = accounts.get('deployer')!;
     const user1 = accounts.get('wallet_1')!;
@@ -52,20 +52,18 @@ Clarinet.test({
     block.receipts[0].result.expectOk();
     block.receipts[1].result.expectOk();
     
-    let getTip = chain.mineBlock([
-      Tx.contractCall('home-loom', 'get-tip', [
-        types.uint(1)
+    let getBalance = chain.mineBlock([
+      Tx.contractCall('home-loom', 'get-balance', [
+        types.principal(user1.address)
       ], deployer.address)
     ]);
     
-    const tip = getTip.receipts[0].result.expectOk().expectSome();
-    assertEquals(tip['author'], user1.address);
-    assertEquals(tip['likes'], 1);
+    getBalance.receipts[0].result.expectOk().expectUint(10);
   },
 });
 
 Clarinet.test({
-  name: "Can update progress",
+  name: "Can update progress and claim milestone rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     const deployer = accounts.get('deployer')!;
     
@@ -76,19 +74,18 @@ Clarinet.test({
       ], deployer.address),
       Tx.contractCall('home-loom', 'update-progress', [
         types.uint(1),
-        types.uint(50)
+        types.uint(100)
       ], deployer.address)
     ]);
     
     block.receipts[1].result.expectOk();
     
-    let getSpace = chain.mineBlock([
-      Tx.contractCall('home-loom', 'get-space', [
-        types.uint(1)
+    let getBalance = chain.mineBlock([
+      Tx.contractCall('home-loom', 'get-balance', [
+        types.principal(deployer.address)
       ], deployer.address)
     ]);
     
-    const space = getSpace.receipts[0].result.expectOk().expectSome();
-    assertEquals(space['progress'], 50);
+    getBalance.receipts[0].result.expectOk().expectUint(100);
   },
 });
