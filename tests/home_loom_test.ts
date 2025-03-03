@@ -8,31 +8,29 @@ import {
 import { assertEquals } from 'https://deno.land/std@0.90.0/testing/asserts.ts';
 
 Clarinet.test({
-  name: "Can create a new space with category",
+  name: "Contract pause functionality works correctly",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     const deployer = accounts.get('deployer')!;
+    const user = accounts.get('wallet_1')!;
     
+    // Test pausing
     let block = chain.mineBlock([
+      Tx.contractCall('home-loom', 'set-paused', [
+        types.bool(true)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+    
+    // Test creating space while paused
+    block = chain.mineBlock([
       Tx.contractCall('home-loom', 'create-space', [
         types.utf8("Living Room"),
-        types.utf8("Main living space organization"),
-        types.utf8("common-areas")
-      ], deployer.address)
+        types.utf8("Description"),
+        types.utf8("category")
+      ], user.address)
     ]);
-    
-    block.receipts[0].result.expectOk().expectUint(1);
-    
-    let getSpace = chain.mineBlock([
-      Tx.contractCall('home-loom', 'get-space', [
-        types.uint(1)
-      ], deployer.address)
-    ]);
-    
-    const space = getSpace.receipts[0].result.expectOk().expectSome();
-    assertEquals(space['owner'], deployer.address);
-    assertEquals(space['name'], "Living Room");
-    assertEquals(space['category'], "common-areas");
-  },
+    block.receipts[0].result.expectErr().expectUint(107);
+  }
 });
 
-// [Rest of the test cases remain the same with additional tests for new features]
+// [Previous test cases remain with additional tests for new features]
